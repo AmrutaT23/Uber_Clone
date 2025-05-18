@@ -181,3 +181,107 @@ curl -X POST http://localhost:PORT/users/login \
 
 - Both fields are required.
 - Returns a JWT token for authenticated requests.
+
+---
+
+# User Profile API Documentation
+
+## Endpoint
+
+`GET /users/profile`
+
+## Description
+
+Retrieves the authenticated user's profile information.  
+Requires a valid JWT token in the `Authorization` header or as a cookie.
+
+---
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>` (if not using cookie)
+
+---
+
+## Responses
+
+### Success
+
+- **Status:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "_id": "<user_id>",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+    // ...other user fields
+  }
+  ```
+
+
+
+## Example Request (cURL)
+
+```bash
+curl -X GET http://localhost:PORT/users/profile \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+## Notes
+
+- Requires authentication.
+- Returns the current user's profile data.
+
+---
+
+# User Logout API Documentation
+
+## Endpoint
+
+`GET /users/logout`
+
+---
+
+## Description
+
+Logs out the authenticated user by blacklisting the JWT token and clearing the authentication cookie.
+
+---
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>` (if not using cookie)
+
+---
+
+## Responses
+
+### Success
+
+- **Status:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "message": "Logged out successfully"
+  }
+  ```
+
+## Example Request (cURL)
+
+```bash
+curl -X GET http://localhost:PORT/users/logout \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+## Notes
+
+- Requires authentication.
+- JWT token is blacklisted for 24 hours and cannot be reused.
+- Authentication cookie is cleared on logout.
