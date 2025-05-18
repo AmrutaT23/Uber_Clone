@@ -116,3 +116,68 @@ curl -X POST http://localhost:PORT/users/register \
 - All fields are required.
 - Email must be unique.
 - Password is securely hashed before storage.
+
+---
+
+# User Login API Documentation
+
+## Endpoint
+
+`POST /users/login`
+
+---
+
+## Description
+
+Authenticates an existing user using email and password.  
+Returns a JWT token and user details upon successful login.
+
+---
+
+## Request Body
+
+Send a JSON object in the following format:
+
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "yourpassword"
+}
+```
+
+### Field Requirements
+
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+
+---
+
+## Responses
+
+### Invalid Credentials
+
+- **Status:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "error": "Invalid email or password"
+  }
+  ```
+
+## Example Request (cURL)
+
+```bash
+curl -X POST http://localhost:PORT/users/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john.doe@example.com",
+    "password": "yourpassword"
+  }'
+```
+
+---
+
+## Notes
+
+- Both fields are required.
+- Returns a JWT token for authenticated requests.
