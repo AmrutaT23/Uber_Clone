@@ -221,8 +221,6 @@ Requires a valid JWT token in the `Authorization` header or as a cookie.
   }
   ```
 
-
-
 ## Example Request (cURL)
 
 ```bash
@@ -277,11 +275,74 @@ Logs out the authenticated user by blacklisting the JWT token and clearing the a
 curl -X GET http://localhost:PORT/users/logout \
   -H "Authorization: Bearer <jwt_token>"
 ```
-
----
-
 ## Notes
 
 - Requires authentication.
 - JWT token is blacklisted for 24 hours and cannot be reused.
 - Authentication cookie is cleared on logout.
+
+---
+
+# Captain Registration API Documentation
+
+## Endpoint
+
+`POST /captains/register`
+
+---
+
+## Description
+
+Registers a new captain (driver) in the system.  
+Validates the input, hashes the password, and stores vehicle details.
+
+---
+
+## Request Body
+
+Send a JSON object in the following format:
+
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Smith"
+  },
+  "email": "jane.smith@example.com",
+  "password": "yourpassword",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": "4",
+    "vehicleType": "car"
+  }
+}
+```
+
+## Responses
+
+## Example Request (cURL)
+
+```bash
+curl -X POST http://localhost:PORT/captains/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "fullname": { "firstname": "Jane", "lastname": "Smith" },
+    "email": "jane.smith@example.com",
+    "password": "yourpassword",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": "4",
+      "vehicleType": "car"
+    }
+  }'
+```
+---
+
+## Notes
+
+- All fields are required.
+- Email must be unique.
+- Password is securely hashed before storage.
+- Vehicle type must be one of: `"car"`, `"motorcycle"`, `"auto"`.
