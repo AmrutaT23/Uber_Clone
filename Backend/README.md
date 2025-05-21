@@ -154,6 +154,42 @@ Send a JSON object in the following format:
 
 ## Responses
 
+### Success
+
+- **Status:** `200 OK`
+- **Body:**
+  ```json
+  {
+    "token": "<jwt_token>",
+    "user": {
+      "_id": "<user_id>",
+      "fullname": {
+        "firstname": "John",
+        "lastname": "Doe"
+      },
+      "email": "john.doe@example.com"
+      // ...other user fields
+    }
+  }
+  ```
+
+### Validation Error
+
+- **Status:** `400 Bad Request`
+- **Body:**
+  ```json
+  {
+    "errors": [
+      {
+        "msg": "Invalid Email",
+        "param": "email",
+        "location": "body"
+      }
+      // ...other validation errors
+    ]
+  }
+  ```
+
 ### Invalid Credentials
 
 - **Status:** `401 Unauthorized`
@@ -163,6 +199,18 @@ Send a JSON object in the following format:
     "error": "Invalid email or password"
   }
   ```
+
+### Internal Server Error
+
+- **Status:** `500 Internal Server Error`
+- **Body:**
+  ```json
+  {
+    "error": "Internal Server Error"
+  }
+  ```
+
+---
 
 ## Example Request (cURL)
 
@@ -189,6 +237,8 @@ curl -X POST http://localhost:PORT/users/login \
 ## Endpoint
 
 `GET /users/profile`
+
+---
 
 ## Description
 
@@ -220,6 +270,18 @@ Requires a valid JWT token in the `Authorization` header or as a cookie.
     // ...other user fields
   }
   ```
+
+### Unauthorized
+
+- **Status:** `401 Unauthorized`
+- **Body:**
+  ```json
+  {
+    "error": "Authentication required"
+  }
+  ```
+
+---
 
 ## Example Request (cURL)
 
@@ -257,17 +319,7 @@ Logs out the authenticated user by blacklisting the JWT token and clearing the a
 
 ---
 
-## Responses
-
-### Success
-
-- **Status:** `200 OK`
-- **Body:**
-  ```json
-  {
-    "message": "Logged out successfully"
-  }
-  ```
+## Response
 
 ## Example Request (cURL)
 
@@ -275,6 +327,9 @@ Logs out the authenticated user by blacklisting the JWT token and clearing the a
 curl -X GET http://localhost:PORT/users/logout \
   -H "Authorization: Bearer <jwt_token>"
 ```
+
+---
+
 ## Notes
 
 - Requires authentication.
@@ -319,7 +374,19 @@ Send a JSON object in the following format:
 }
 ```
 
-## Responses
+### Field Requirements
+
+- `fullname.firstname` (string, required): Minimum 3 characters.
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+- `vehicle.color` (string, required): Minimum 3 characters.
+- `vehicle.plate` (string, required): Minimum 3 characters.
+- `vehicle.capacity` (string, required): At least 1.
+- `vehicle.vehicleType` (string, required): Must be one of `"car"`, `"motorcycle"`, or `"auto"`.
+
+---
+
+## Response
 
 ## Example Request (cURL)
 
@@ -338,6 +405,7 @@ curl -X POST http://localhost:PORT/captains/register \
     }
   }'
 ```
+
 ---
 
 ## Notes
@@ -346,3 +414,136 @@ curl -X POST http://localhost:PORT/captains/register \
 - Email must be unique.
 - Password is securely hashed before storage.
 - Vehicle type must be one of: `"car"`, `"motorcycle"`, `"auto"`.
+
+---
+
+# Captain Login API Documentation
+
+## Endpoint
+
+`POST /captains/login`
+
+---
+
+## Description
+
+Authenticates an existing captain using email and password.  
+Returns a JWT token and captain details upon successful login.
+
+---
+
+## Request Body
+
+Send a JSON object in the following format:
+
+```json
+{
+  "email": "jane.smith@example.com",
+  "password": "yourpassword"
+}
+```
+
+### Field Requirements
+
+- `email` (string, required): Must be a valid email address.
+- `password` (string, required): Minimum 6 characters.
+
+---
+
+## Response
+
+## Example Request (cURL)
+
+```bash
+curl -X POST http://localhost:PORT/captains/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "jane.smith@example.com",
+    "password": "yourpassword"
+  }'
+```
+
+---
+
+## Notes
+
+- Both fields are required.
+- Returns a JWT token for authenticated requests.
+
+---
+
+# Captain Profile API Documentation
+
+## Endpoint
+
+`GET /captains/profile`
+
+---
+
+## Description
+
+Retrieves the authenticated captain's profile information.  
+Requires a valid JWT token in the `Authorization` header or as a cookie.
+
+---
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>` (if not using cookie)
+
+---
+
+## Response
+
+## Example Request (cURL)
+
+```bash
+curl -X GET http://localhost:PORT/captains/profile \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+## Notes
+
+- Requires authentication.
+- Returns the current captain's profile data.
+
+---
+
+# Captain Logout API Documentation
+
+## Endpoint
+
+`GET /captains/logout`
+
+---
+
+## Description
+
+Logs out the authenticated captain by blacklisting the JWT token and clearing the authentication cookie.
+
+---
+
+## Request Headers
+
+- `Authorization: Bearer <jwt_token>` (if not using cookie)
+
+---
+
+## Response
+
+## Example Request (cURL)
+
+```bash
+curl -X GET http://localhost:PORT/captains/logout \
+  -H "Authorization: Bearer <jwt_token>"
+```
+
+---
+
+## Notes
+
+- Requires authentication.
+- JWT token is blacklisted for 24 hours and cannot be reused.
+- Authentication cookie is cleared on logout.
