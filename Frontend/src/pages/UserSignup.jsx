@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { UserDataContext } from '../assets/context/UserContext'
 
 const UserSignup = () => {
   const [email,setEmail] = useState('');
@@ -8,25 +10,53 @@ const UserSignup = () => {
   const [lastName,setLastName] = useState('');
   const [userData, setuserData] = useState({})
 
+  const navigate = useNavigate();
 
-  const submitHandler = (e)=>{
-    e.preventDefault();
-    setuserData({
-      fullName:{
-        firstName:firstName,
-        lastName:lastName
-      },
-      email:email,
-      password:password
-    })
+  const {user,setUser} = React.useContext(UserDataContext)
 
-    console.log(userData)
-    setEmail('')
-    setPassword('')
-    setFirstName('')
-    setLastName('')
+  const submitHandler = async (e) => {
+  e.preventDefault();
 
+  const newUser = {
+    fullname: {
+      firstname: firstName,
+      lastname: lastName
+    },
+    email: email,
+    password: password,
+  };
+
+  try {
+    
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/users/register`,
+      newUser
+    );
+
+    if (response.status === 201) {
+      const data = response.data;
+      setUser(data.user);
+      localStorage.setItem("token", data.token);
+      navigate("/home");
+    }
+
+    // clear form fields
+    setEmail("");
+    setPassword("");
+    setFirstName("");
+    setLastName("");
+  } catch (error) {
+    //  ADD THIS LOGGING BLOCK
+    if (error.response) {
+      console.log("📦 Full error response from backend:", error.response.data);
+      alert(error.response.data.message || "Registration failed");
+    } else {
+      console.log("❌ Error:", error.message);
+      alert("Something went wrong.");
+    }
   }
+};
+
 
   return (
     <div className='p-7 h-screen flex flex-col justify-between'>
@@ -38,8 +68,9 @@ const UserSignup = () => {
         <img className='w-16 mb-10 ' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
         <h3 className='text-lg font-medium mb-2'>What's your name</h3>
         <div className='flex mb-6 gap-4'>
+
         <input 
-        requird 
+        required 
         value={firstName}
         onChange={(e)=>
           setFirstName(e.target.value)
@@ -48,7 +79,7 @@ const UserSignup = () => {
         type="text" placeholder='First Name' 
         />
         <input 
-        requird 
+        required
         value={lastName}
         onChange={(e)=>
           setLastName(e.target.value)
@@ -61,7 +92,7 @@ const UserSignup = () => {
 
         <h3 className='text-lg font-medium mb-2'>What's your email</h3>
         <input 
-        requird 
+        required 
         value={email}
         onChange={(e)=>
           setEmail(e.target.value)
@@ -71,14 +102,14 @@ const UserSignup = () => {
         />
         <h3 className='text-lg font-medium mb-2'>Enter Password</h3>
         <input 
-        requird 
+        required
         value={password}
         onChange={(e)=>
           setPassword(e.target.value)
           }
         className='bg-[#FFFFFF] mb-6 rounded px-4 py-2  w-full text-lg placeholder: text-base' type="password" placeholder='password' 
         />
-        <button className='bg-black text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder: text-base'>Login</button>
+        <button className='bg-black text-white font-semibold mb-3 rounded px-4 py-2  w-full text-lg placeholder: text-base'>Create Account</button>
 
         <p className='text-center'>Already have a account? <Link to='/login' className='text-blue-600'>Login here</Link></p>
       </form>
