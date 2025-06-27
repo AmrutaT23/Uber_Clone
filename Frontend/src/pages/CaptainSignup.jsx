@@ -163,7 +163,7 @@ try {
       </form>
       </div>
       <div>
-        <p className='text-[9px] leading-tigth'>By proceeding, you consent to get calls, WhatsApp or SMS/RCS messages, including by automated means, from Uber and its affiliates to the number provided.</p>
+        <p className='text-[9px] mt-6 leading-tigth'>By proceeding, you consent to get calls, WhatsApp or SMS/RCS messages, including by automated means, from Uber and its affiliates to the number provided.</p>
       </div>
       
     </div>
